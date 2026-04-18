@@ -1,38 +1,33 @@
 import json
-from typing import Any, Dict, Union
+import http.client
 
 class RobloxDataHandler:
+    BASE_URL = 'https://data.roblox.com'
+    
     @staticmethod
-    def load_data(file_path: str) -> Union[Dict[str, Any], None]:
-        try:
-            with open(file_path, 'r') as file:
-                return json.load(file)
-        except (FileNotFoundError, json.JSONDecodeError) as e:
-            print(f'Error loading data: {e}')
-            return None
+    def fetch_data(api_endpoint):
+        conn = http.client.HTTPSConnection('data.roblox.com')
+        conn.request('GET', api_endpoint)
+        response = conn.getresponse()
+        return json.loads(response.read())
+    
+    @staticmethod
+    def format_user_data(user_data):
+        formatted = {
+            'id': user_data['UserId'],
+            'name': user_data['Username'],
+            'friends_count': user_data['FriendCount'],
+            'is_online': user_data['IsOnline']
+        }
+        return json.dumps(formatted, indent=4)
+    
+    @classmethod
+    def get_user_info(cls, user_id):
+        api_endpoint = f'/users/{user_id}'
+        user_data = cls.fetch_data(api_endpoint)
+        return cls.format_user_data(user_data)
 
-    @staticmethod
-    def save_data(file_path: str, data: Dict[str, Any]) -> bool:
-        try:
-            with open(file_path, 'w') as file:
-                json.dump(data, file, indent=4)
-            return True
-        except IOError as e:
-            print(f'Error saving data: {e}')
-            return False
-
-    @staticmethod
-    def update_data(file_path: str, updates: Dict[str, Any]) -> bool:
-        data = RobloxDataHandler.load_data(file_path)
-        if data is None:
-            return False
-        data.update(updates)
-        return RobloxDataHandler.save_data(file_path, data)
-
-    @staticmethod
-    def get_value(data: Dict[str, Any], key: str, default: Any = None) -> Any:
-        return data.get(key, default)
-
-    @staticmethod
-    def set_value(data: Dict[str, Any], key: str, value: Any) -> None:
-        data[key] = value
+# Example usage
+if __name__ == '__main__':
+    user_info = RobloxDataHandler.get_user_info(123456)
+    print(user_info)
