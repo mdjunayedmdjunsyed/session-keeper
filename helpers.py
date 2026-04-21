@@ -1,33 +1,44 @@
-import json
-import http.client
+from typing import List, Dict, Any
 
-class RobloxDataHandler:
-    BASE_URL = 'https://data.roblox.com'
-    
-    @staticmethod
-    def fetch_data(api_endpoint):
-        conn = http.client.HTTPSConnection('data.roblox.com')
-        conn.request('GET', api_endpoint)
-        response = conn.getresponse()
-        return json.loads(response.read())
-    
-    @staticmethod
-    def format_user_data(user_data):
-        formatted = {
-            'id': user_data['UserId'],
-            'name': user_data['Username'],
-            'friends_count': user_data['FriendCount'],
-            'is_online': user_data['IsOnline']
-        }
-        return json.dumps(formatted, indent=4)
-    
-    @classmethod
-    def get_user_info(cls, user_id):
-        api_endpoint = f'/users/{user_id}'
-        user_data = cls.fetch_data(api_endpoint)
-        return cls.format_user_data(user_data)
 
-# Example usage
-if __name__ == '__main__':
-    user_info = RobloxDataHandler.get_user_info(123456)
-    print(user_info)
+def format_user_data(user_id: int, username: str, attributes: Dict[str, Any]) -> str:
+    """
+    Formats user data for display.
+
+    Args:
+        user_id (int): The ID of the user.
+        username (str): The username of the user.
+        attributes (Dict[str, Any]): A dictionary of user attributes.
+
+    Returns:
+        str: A formatted string representing the user's information.
+    """
+    attributes_str = ', '.join(f'{key}: {value}' for key, value in attributes.items())
+    return f'User [{user_id}] - {username} | Attributes: {attributes_str}'
+
+
+def filter_users(users: List[Dict[str, Any]], min_age: int) -> List[Dict[str, Any]]:
+    """
+    Filters users by minimum age.
+
+    Args:
+        users (List[Dict[str, Any]]): A list of user dictionaries.
+        min_age (int): The minimum age for users to be included.
+
+    Returns:
+        List[Dict[str, Any]]: A list of users who meet the age criteria.
+    """
+    return [user for user in users if user.get('age', 0) >= min_age]
+
+
+def extract_usernames(users: List[Dict[str, Any]]) -> List[str]:
+    """
+    Extracts usernames from a list of user dictionaries.
+
+    Args:
+        users (List[Dict[str, Any]]): A list of user dictionaries.
+
+    Returns:
+        List[str]: A list of usernames.
+    """
+    return [user['username'] for user in users if 'username' in user]
