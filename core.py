@@ -1,33 +1,30 @@
-import time
-import logging
+import sys
 
 class SessionKeeper:
-    def __init__(self, session_timeout=300):
-        self.session_timeout = session_timeout
-        self.last_active = time.time()
-        self.is_active = True
-        self.logger = logging.getLogger(__name__)
+    def __init__(self):
+        self.active_sessions = []
 
-    def update_activity(self):
-        self.last_active = time.time()
-        self.logger.info('Session activity updated.')
-
-    def check_session(self):
-        if time.time() - self.last_active > self.session_timeout:
-            self.end_session()
+    def start_session(self, session_id):
+        if self.validate_input(session_id):
+            self.active_sessions.append(session_id)
+            print(f'Session {session_id} started.')
         else:
-            self.logger.info('Session is still active.')
+            print(f'Invalid session ID: {session_id}')
 
-    def end_session(self):
-        self.is_active = False
-        self.logger.warning('Session has ended due to timeout.')
+    def stop_session(self, session_id):
+        if session_id in self.active_sessions:
+            self.active_sessions.remove(session_id)
+            print(f'Session {session_id} stopped.')
+        else:
+            print(f'Session {session_id} not found.')
 
-    def reset_session(self):
-        self.is_active = True
-        self.last_active = time.time()
-        self.logger.info('Session has been reset.')
+    def validate_input(self, session_id):
+        return isinstance(session_id, str) and len(session_id) > 0
 
-    def get_session_status(self):
-        return self.is_active
+    def process_sessions(self, session_ids):
+        for session_id in session_ids:
+            self.start_session(session_id)
 
-SessionKeeper().update_activity()
+if __name__ == '__main__':
+    keeper = SessionKeeper()
+    keeper.process_sessions(sys.argv[1:])
