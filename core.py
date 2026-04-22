@@ -1,30 +1,35 @@
-import sys
+import json
+import requests
 
-class SessionKeeper:
-    def __init__(self):
-        self.active_sessions = []
+class RobloxDataHandler:
+    BASE_URL = 'https://api.roblox.com/'
 
-    def start_session(self, session_id):
-        if self.validate_input(session_id):
-            self.active_sessions.append(session_id)
-            print(f'Session {session_id} started.')
-        else:
-            print(f'Invalid session ID: {session_id}')
+    @staticmethod
+    def fetch_user_data(user_id):
+        """Fetch user data from Roblox API by user ID."""
+        response = requests.get(f'{RobloxDataHandler.BASE_URL}users/{user_id}')
+        if response.status_code != 200:
+            raise Exception('Failed to fetch data')
+        return response.json()
 
-    def stop_session(self, session_id):
-        if session_id in self.active_sessions:
-            self.active_sessions.remove(session_id)
-            print(f'Session {session_id} stopped.')
-        else:
-            print(f'Session {session_id} not found.')
+    @staticmethod
+    def fetch_game_data(game_id):
+        """Fetch game data from Roblox API by game ID."""
+        response = requests.get(f'{RobloxDataHandler.BASE_URL}games/{game_id}/data')
+        if response.status_code != 200:
+            raise Exception('Failed to fetch game data')
+        return response.json()
 
-    def validate_input(self, session_id):
-        return isinstance(session_id, str) and len(session_id) > 0
+    @staticmethod
+    def get_user_friends(user_id):
+        """Fetch friends list for a given user ID."""
+        response = requests.get(f'{RobloxDataHandler.BASE_URL}users/{user_id}/friends')
+        if response.status_code != 200:
+            raise Exception('Failed to fetch friends')
+        return response.json()  
 
-    def process_sessions(self, session_ids):
-        for session_id in session_ids:
-            self.start_session(session_id)
-
-if __name__ == '__main__':
-    keeper = SessionKeeper()
-    keeper.process_sessions(sys.argv[1:])
+    @staticmethod
+    def save_data_to_json(data, filename):
+        """Save data to a JSON file."""
+        with open(filename, 'w') as json_file:
+            json.dump(data, json_file, indent=4)
