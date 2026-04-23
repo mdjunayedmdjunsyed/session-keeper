@@ -2,20 +2,19 @@ import logging
 import os
 from logging.handlers import RotatingFileHandler
 
-LOG_FORMAT = '%(asctime)s - %(levelname)s - %(message)s'
-LOG_FILE = 'session_keeper.log'
-MAX_BYTES = 5 * 1024 * 1024  # 5 MB
-BACKUP_COUNT = 3
-
-
-def setup_logger():
+def setup_logger(log_file='session_keeper.log', max_bytes=5*1024*1024, backup_count=3):
     logger = logging.getLogger('session_keeper')
     logger.setLevel(logging.DEBUG)
+
     if not logger.handlers:
-        handler = RotatingFileHandler(LOG_FILE, maxBytes=MAX_BYTES, backupCount=BACKUP_COUNT)
-        formatter = logging.Formatter(LOG_FORMAT)
+        # Creating a directory for logs if it doesn't exist
+        os.makedirs('logs', exist_ok=True)
+        handler = RotatingFileHandler(os.path.join('logs', log_file), maxBytes=max_bytes, backupCount=backup_count)
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         handler.setFormatter(formatter)
         logger.addHandler(handler)
+
     return logger
 
 logger = setup_logger()
+logger.info('Logger setup complete.')
