@@ -1,18 +1,28 @@
-import time
-import requests
+import json
+import os
 
-class NetworkException(Exception):
-    pass
+def load_json(file_path):
+    if not os.path.isfile(file_path):
+        raise FileNotFoundError(f"{file_path} not found")
+    with open(file_path, 'r') as f:
+        return json.load(f)
 
-def retry_request(url, retries=3, delay=2, backoff=2):
-    for i in range(retries):
-        try:
-            response = requests.get(url)
-            response.raise_for_status()
-            return response.json()
-        except requests.exceptions.RequestException as e:
-            if i < retries - 1:
-                time.sleep(delay)
-                delay *= backoff
-            else:
-                raise NetworkException(f"Network request failed after {retries} attempts") from e
+
+def save_json(data, file_path):
+    with open(file_path, 'w') as f:
+        json.dump(data, f, indent=4)
+
+
+def is_valid_user(user):
+    return isinstance(user, dict) and 'username' in user and 'id' in user
+
+
+def format_username(username):
+    if not isinstance(username, str):
+        raise ValueError("Username must be a string")
+    return username.strip().lower()
+
+
+def create_user_dict(username, user_id):
+    formatted_username = format_username(username)
+    return { 'username': formatted_username, 'id': user_id }
