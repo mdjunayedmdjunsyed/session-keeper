@@ -1,44 +1,26 @@
-from typing import List, Dict, Any
+import json
+import os
 
+def load_config(file_path):
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"Config file not found: {file_path}")
+    with open(file_path, 'r') as file:
+        config = json.load(file)
+    return config
 
-def format_user_data(user_id: int, username: str, attributes: Dict[str, Any]) -> str:
-    """
-    Formats user data for display.
+def save_config(file_path, data):
+    with open(file_path, 'w') as file:
+        json.dump(data, file, indent=4)
+    print(f"Config saved to {file_path}")
 
-    Args:
-        user_id (int): The ID of the user.
-        username (str): The username of the user.
-        attributes (Dict[str, Any]): A dictionary of user attributes.
+def format_timestamp(timestamp):
+    return timestamp.strftime('%Y-%m-%d %H:%M:%S')
 
-    Returns:
-        str: A formatted string representing the user's information.
-    """
-    attributes_str = ', '.join(f'{key}: {value}' for key, value in attributes.items())
-    return f'User [{user_id}] - {username} | Attributes: {attributes_str}'
+def is_valid_user_id(user_id):
+    return isinstance(user_id, int) and user_id > 0
 
+def cleanup_data(data):
+    if not isinstance(data, list):
+        raise ValueError('Expected a list for cleanup')
+    return [item for item in data if item is not None and item != '']  
 
-def filter_users(users: List[Dict[str, Any]], min_age: int) -> List[Dict[str, Any]]:
-    """
-    Filters users by minimum age.
-
-    Args:
-        users (List[Dict[str, Any]]): A list of user dictionaries.
-        min_age (int): The minimum age for users to be included.
-
-    Returns:
-        List[Dict[str, Any]]: A list of users who meet the age criteria.
-    """
-    return [user for user in users if user.get('age', 0) >= min_age]
-
-
-def extract_usernames(users: List[Dict[str, Any]]) -> List[str]:
-    """
-    Extracts usernames from a list of user dictionaries.
-
-    Args:
-        users (List[Dict[str, Any]]): A list of user dictionaries.
-
-    Returns:
-        List[str]: A list of usernames.
-    """
-    return [user['username'] for user in users if 'username' in user]
