@@ -1,20 +1,29 @@
 import logging
-import os
 from logging.handlers import RotatingFileHandler
 
-def setup_logger(log_file='session_keeper.log', max_bytes=5*1024*1024, backup_count=3):
-    logger = logging.getLogger('session_keeper')
-    logger.setLevel(logging.DEBUG)
+class LoggerSetup:
+    def __init__(self, log_file='app.log', max_bytes=5*1024*1024, backup_count=3):
+        self.logger = logging.getLogger('SessionKeeper')
+        self.logger.setLevel(logging.DEBUG)
+        self.handler = RotatingFileHandler(log_file, maxBytes=max_bytes, backupCount=backup_count)
+        self.handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+        self.logger.addHandler(self.handler)
 
-    if not logger.handlers:
-        # Creating a directory for logs if it doesn't exist
-        os.makedirs('logs', exist_ok=True)
-        handler = RotatingFileHandler(os.path.join('logs', log_file), maxBytes=max_bytes, backupCount=backup_count)
-        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        handler.setFormatter(formatter)
-        logger.addHandler(handler)
+    def log_info(self, message):
+        self.logger.info(message)
 
-    return logger
+    def log_warning(self, message):
+        self.logger.warning(message)
 
-logger = setup_logger()
-logger.info('Logger setup complete.')
+    def log_error(self, message):
+        self.logger.error(message)
+
+    def log_debug(self, message):
+        self.logger.debug(message)
+
+if __name__ == '__main__':
+    logger = LoggerSetup()  
+    logger.log_info('Logger initialized')
+    logger.log_warning('This is a warning message')
+    logger.log_error('An error occurred')
+    logger.log_debug('Debug information here')
