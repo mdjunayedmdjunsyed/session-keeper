@@ -1,36 +1,56 @@
 # session-keeper
 
-Session Keeper is a Python-based Roblox session management tool designed to help developers maintain and manage their game sessions efficiently. This project provides seamless integration with the Roblox platform, allowing developers to monitor and log session data effortlessly.
+Session Keeper is a Python-based utility designed to help Roblox developers and players maintain their in-game sessions. With this tool, you can automate session management, ensuring a seamless gaming experience without interruptions.
 
 ## Features
 
-- **Robust Session Tracking**: Automatically logs player sessions, including entry and exit times, with detailed statistics on active users.
-- **Real-time Notifications**: Get instant alerts on critical session events, such as player joins and leaves, maximizing your oversight of game activity.
-- **Data Export Options**: Export session data in multiple formats (CSV, JSON) for detailed analysis or reporting in your preferred tools.
-- **User-Friendly Dashboard**: A simple web dashboard to visualize session metrics, making it easy to monitor trends and player engagement over time.
+- **Automatic Session Recovery**: Automatically reconnect to your Roblox game session if it gets interrupted due to network issues or game crashes.
+- **Customizable Idle Timeout**: Set personalized idle time limits, allowing the tool to monitor your activity and reconnect as needed.
+- **User-Friendly Command Line Interface**: Launch and configure the application easily using straightforward commands and options.
+- **Log Tracking**: Keep track of all session activities with detailed logs, offering insights into connection stability and session duration.
 
 ## Installation
 
-To install Session Keeper, ensure you have Python 3.7 or higher installed. Then, you can easily set it up using pip. Run the following commands in your terminal:
+To install Session Keeper, you need Python 3.7 or higher. Follow the steps below to get started:
 
-```bash
-git clone https://github.com/Developer/session-keeper.git
-cd session-keeper
-pip install -r requirements.txt
-```
+1. Clone the repository:
+
+    ```bash
+    git clone https://github.com/Developer/session-keeper.git
+    ```
+
+2. Navigate to the project directory:
+
+    ```bash
+    cd session-keeper
+    ```
+
+3. Install the required dependencies:
+
+    ```bash
+    pip install -r requirements.txt
+    ```
 
 ## Basic Usage
 
-To start using Session Keeper, first configure your Roblox API credentials in the `config.py` file. Then, run the main script:
+To start using Session Keeper, simply run the following command in your terminal:
 
 ```bash
-python session_keeper.py
+python session_keeper.py --timeout 300
 ```
 
-By default, it will log session data to a local database. You can access the user-friendly dashboard by navigating to `http://localhost:5000` in your web browser.
+In the above command, `--timeout` sets the idle time limit to 300 seconds (5 minutes). Modify this value as needed to fit your gaming preferences.
 
-## License
+For a list of all available options, run:
 
-![License](https://img.shields.io/badge/license-MIT-green.svg)
+```bash
+python session_keeper.py --help
+```
 
-Session Keeper is licensed under the MIT License. Feel free to contribute and enhance the project! For more detailed contributions, check the `CONTRIBUTING.md`.
+This will display helpful information on additional configurations and commands to fine-tune your session management experience.
+
+## License 
+
+![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
