@@ -1,35 +1,22 @@
-def is_valid_username(username):
-    if not (3 <= len(username) <= 20):
-        return False
-    if not username.isalnum():
-        return False
+def validate_session_input(user_input):
+    if not isinstance(user_input, str):
+        raise ValueError('Input must be a string')
+    if len(user_input) == 0:
+        raise ValueError('Input cannot be empty')
+    if not user_input.isalnum():
+        raise ValueError('Input must be alphanumeric')
     return True
 
 
-def is_valid_password(password):
-    if len(password) < 6:
-        return False
-    if len(password) > 20:
-        return False
-    if not any(char.isdigit() for char in password):
-        return False
-    if not any(char.isalpha() for char in password):
-        return False
-    return True
+def main_loop():
+    while True:
+        user_input = input('Enter session ID: ')
+        try:
+            validate_session_input(user_input)
+            print(f'Session ID is valid: {user_input}')
+            # Process the valid session further
+        except ValueError as e:
+            print(f'Error: {e}')
 
-
-def is_valid_email(email):
-    import re
-    email_regex = r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}'
-    return re.match(email_regex, email) is not None
-
-
-def is_valid_age(age):
-    return isinstance(age, int) and 13 <= age <= 100
-
-
-def are_valid_inputs(username, password, email, age):
-    return (is_valid_username(username) and
-            is_valid_password(password) and
-            is_valid_email(email) and
-            is_valid_age(age))
+if __name__ == '__main__':
+    main_loop()
