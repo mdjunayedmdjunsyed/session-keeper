@@ -2,18 +2,31 @@ import json
 import os
 
 DEFAULT_CONFIG = {
-    'username': 'guest',
+    'game_id': 123456,
     'session_timeout': 300,
-    'auto_save': True
+    'max_players': 10,
+    'log_level': 'INFO'
 }
 
-def load_config(file_path):
-    if os.path.exists(file_path):
-        with open(file_path, 'r') as config_file:
-            config = json.load(config_file)
-            return {**DEFAULT_CONFIG, **config}
-    return DEFAULT_CONFIG
+class ConfigLoader:
+    def __init__(self, config_file='config.json'):
+        self.config_file = config_file
+        self.config = self.load_config()
+
+    def load_config(self):
+        if os.path.isfile(self.config_file):
+            with open(self.config_file, 'r') as f:
+                user_config = json.load(f)
+            return {**DEFAULT_CONFIG, **user_config}
+        return DEFAULT_CONFIG
+
+    def get(self, key, default=None):
+        return self.config.get(key, default)
+
+    def save(self):
+        with open(self.config_file, 'w') as f:
+            json.dump(self.config, f, indent=4)
 
 if __name__ == '__main__':
-    config = load_config('config.json')
-    print(config)
+    loader = ConfigLoader()
+    print(loader.config)
