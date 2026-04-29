@@ -1,32 +1,31 @@
-import json
-import requests
+import robloxapi
+from constants import BASE_URL
 
-class RobloxDataHandler:
-    def __init__(self, base_url):
-        self.base_url = base_url
+class SessionKeeper:
+    def __init__(self, username, password):
+        self.username = username
+        self.password = password
+        self.session = None
 
-    def fetch_user_data(self, user_id):
-        response = requests.get(f'{self.base_url}/users/{user_id}/data')
-        if response.status_code == 200:
-            return response.json()
+    def login(self):
+        self.session = robloxapi.login(self.username, self.password)
+        return self.session
+
+    def keep_alive(self):
+        if self.session:
+            response = robloxapi.keep_session_alive(self.session)
+            return response
+        raise Exception('No active session')
+
+    def logout(self):
+        if self.session:
+            robloxapi.logout(self.session)
+            self.session = None
         else:
-            raise Exception('Failed to fetch user data')
+            raise Exception('No active session to logout')
 
-    def save_data_to_file(self, user_data, filename):
-        with open(filename, 'w') as file:
-            json.dump(user_data, file)
-
-    def load_data_from_file(self, filename):
-        with open(filename, 'r') as file:
-            return json.load(file)
-
-    def update_user_data(self, user_id, data):
-        response = requests.put(f'{self.base_url}/users/{user_id}/data', json=data)
-        return response.status_code == 204
-
-# Example usage:
-# handler = RobloxDataHandler('https://api.roblox.com')
-# user_data = handler.fetch_user_data(123456)
-# handler.save_data_to_file(user_data, 'user_data.json')
-# loaded_data = handler.load_data_from_file('user_data.json')
-# handler.update_user_data(123456, {'key': 'value'})
+if __name__ == '__main__':
+    keeper = SessionKeeper('user@example.com', 'password')
+    keeper.login()
+    keeper.keep_alive()
+    keeper.logout()
