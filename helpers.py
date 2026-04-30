@@ -1,26 +1,31 @@
-import json
-import os
+import re
 
-def load_config(file_path):
-    if not os.path.exists(file_path):
-        raise FileNotFoundError(f"Config file not found: {file_path}")
-    with open(file_path, 'r') as file:
-        config = json.load(file)
-    return config
+def validate_username(username):
+    if not isinstance(username, str) or not username:
+        raise ValueError('Username must be a non-empty string.')
+    if len(username) < 3 or len(username) > 20:
+        raise ValueError('Username must be between 3 and 20 characters.')
+    if not re.match('^[a-zA-Z0-9_]*$', username):
+        raise ValueError('Username can only contain letters, numbers, and underscores.')
+    return True
 
-def save_config(file_path, data):
-    with open(file_path, 'w') as file:
-        json.dump(data, file, indent=4)
-    print(f"Config saved to {file_path}")
+def validate_session_duration(duration):
+    if not isinstance(duration, int) or duration <= 0:
+        raise ValueError('Session duration must be a positive integer.')
+    return True
 
-def format_timestamp(timestamp):
-    return timestamp.strftime('%Y-%m-%d %H:%M:%S')
+class SessionKeeper:
+    def __init__(self, username, session_duration):
+        validate_username(username)
+        validate_session_duration(session_duration)
+        self.username = username
+        self.session_duration = session_duration
+        self.active = False
 
-def is_valid_user_id(user_id):
-    return isinstance(user_id, int) and user_id > 0
+    def start_session(self):
+        self.active = True
+        print(f'Session for {self.username} started for {self.session_duration} minutes.')
 
-def cleanup_data(data):
-    if not isinstance(data, list):
-        raise ValueError('Expected a list for cleanup')
-    return [item for item in data if item is not None and item != '']  
-
+    def end_session(self):
+        self.active = False
+        print(f'Session for {self.username} ended.')
